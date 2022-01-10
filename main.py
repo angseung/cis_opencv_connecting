@@ -21,17 +21,12 @@ def parse_cli_args():
 
 
 # TODO : find appropriate device path...
-def open_usb_capturecard(device: Union[str, int] = 0) -> cv2.VideoCapture:
-    return cv2.VideoCapture(
-        "nvarguscamerasrc sensor_mode=1 ! "
-        "video/x-raw(memory:NVMM), width=(int)400, height=(int)300, format=(string)NV12, framerate=(fraction)30/1 ! "
-        "nvvidconv ! video/x-raw,format=(string)BGRx ! "
-        "videoconvert ! video/x-raw, format=(string)BGR ! appsink"
-    )
+def open_usb_capturecard(device: Union[str, int] = 1) -> cv2.VideoCapture:
+    return cv2.VideoCapture(device)
 
 
 # TODO : find appropriate device path...
-def open_camera_device(device: Union[str, int] = 0) -> cv2.VideoCapture:
+def open_camera_device(device: Union[str, int] = 1) -> cv2.VideoCapture:
     return cv2.VideoCapture(device)
 
 
