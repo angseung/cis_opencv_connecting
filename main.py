@@ -6,6 +6,7 @@ import numpy as np
 import time
 from cis_utils import salt_and_pepper, hw_RSEPD_fast_HT, white_balance
 
+
 def parse_cli_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -135,6 +136,7 @@ if __name__ == "__main__":
     print("OpenCV version: {}".format(cv2.__version__))
     print("Device Number:", arguments.video_device)
     print(cv2.getBuildInformation())
+
     if arguments.video_device == 0:
         print("Using on-board camera")
         video_capture = open_usb_capturecard()
