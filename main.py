@@ -21,12 +21,12 @@ def parse_cli_args():
 
 
 # TODO : find appropriate device path...
-def open_usb_capturecard(device: Union[str, int] = 1) -> cv2.VideoCapture:
+def open_usb_capturecard(device: Union[str, int] = 0) -> cv2.VideoCapture:
     return cv2.VideoCapture(device)
 
 
 # TODO : find appropriate device path...
-def open_camera_device(device: Union[str, int] = 1) -> cv2.VideoCapture:
+def open_camera_device(device: Union[str, int] = 0) -> cv2.VideoCapture:
     return cv2.VideoCapture(device)
 
 
