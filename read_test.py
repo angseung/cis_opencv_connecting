@@ -1,7 +1,7 @@
 import cv2
 
-cap = cv2.VideoCapture(1)
-# cap.open(0, cv2.CAP_DSHOW)
+cap = cv2.VideoCapture()
+cap.open(0, cv2.CAP_DSHOW)
 
 if __name__ == "__main__":
     print(cv2.getBuildInformation())
