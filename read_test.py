@@ -3,58 +3,26 @@ from matplotlib import pyplot as plt
 from cis_utils import *
 
 
-def onMouse(event, x, y, flags, param): # 아무스 콜백 함수 구현 ---①
-    print(event, x, y, )                # 파라미터 출력
-    if event == cv2.EVENT_LBUTTONDOWN:  # 왼쪽 버튼 누름인 경우 ---②
-        cv2.circle(frame, (x, y), 30, (0, 0, 0), -1) # 지름 30 크기의 검은색 원을 해당 좌표에 그림
-        cv2.imshow("frame", frame)          # 그려진 이미지를 다시 표시 ---③
-
-
-def draw_rectangle(event, x, y, flags, param):
-    global x1, y1, click  # 전역변수 사용
-    # click = True
-
-    if event == cv2.EVENT_LBUTTONDOWN:  # 마우스를 누른 상태
-        click = True
-        x1, y1 = x, y
-        print("사각형의 왼쪽위 설정 : (" + str(x1) + ", " + str(y1) + ")")
-
-    elif event == cv2.EVENT_MOUSEMOVE:  # 마우스 이동
-        if click == True:  # 마우스를 누른 상태 일경우
-            cv2.rectangle(frame, (x1, y1), (x, y), (255, 0, 0), -1)
-            # cv2.circle(img,(x,y),5,(0,255,0),-1)
-            print("(" + str(x1) + ", " + str(y1) + "), (" + str(x) + ", " + str(y) + ")")
-
-    elif event == cv2.EVENT_LBUTTONUP:
-        click = False;  # 마우스를 때면 상태 변경
-        cv2.rectangle(frame, (x1, y1), (x, y), (255, 0, 0), -1)
-        # cv2.circle(img,(x,y),5,(0,255,0),-1)
-
-        if x1 < x and y1 < y:
-            print("currunt point : (%d, %d) ~ (%d, %d)" % (x1, y1, x, y))
-            fig = plt.figure()
-            try:
-                plt.imshow(frame[x1 : x, y1 : y, :])
-                # plt.show()
-            except:
-                pass
-
-
 if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
     print(cv2.getBuildInformation())
 
     ret, frame = cap.read()
-    print("Current status :", ret)
     cv2.imshow("frame", frame)
-    cv2.setMouseCallback("frame", draw_rectangle)
 
-    # ret, frame = cap.read()
+    cv2.createTrackbar("ROI Y Position", "frame", 0, 1918, nothing)
+    cv2.createTrackbar("ROI X Position", "frame", 0, 1080, nothing)
+    cv2.createTrackbar("ROI Width", "frame", 0, 1080, nothing)
+    cv2.createTrackbar("ROI Height", "frame", 0, 1918, nothing)
 
     while True:
-        # if not click:
         ret, frame = cap.read()
-        # print("Current status :", ret, frame.shape)
+        box = get_roi_box(input_size=(frame.shape[0], frame.shape[1]),
+                          pos=(cv2.getTrackbarPos("ROI Y Position", "frame"), cv2.getTrackbarPos("ROI X Position", "frame")),
+                          size=(cv2.getTrackbarPos("ROI Height", "frame"), cv2.getTrackbarPos("ROI Width", "frame")),
+                          )
+        box_mask = box == 255
+        frame[box_mask] = 255
         cv2.imshow("frame", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):

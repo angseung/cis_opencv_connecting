@@ -2,6 +2,31 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
+def nothing(event):
+    pass
+
+
+def get_roi_box(
+    input_size: tuple[int, int] = (1080, 1918),
+    pos: tuple[int, int] = None,
+    size: tuple[int, int] = None,
+) -> np.ndarray:
+
+    pos_x, pos_y = pos[0], pos[1]
+    width, height = size[0], size[1]
+    line_thickness = 10
+
+    # BGR channel image...
+    box = np.zeros((*input_size, 3), dtype=np.uint8)
+    box[pos_y : pos_y + line_thickness, pos_x : pos_x + width, 2] = 255
+    box[pos_y : pos_y + height, pos_x : pos_x + line_thickness, 2] = 255
+    box[pos_y + height - line_thickness: pos_y + height, pos_x : pos_x + width, 2] = 255
+    box[pos_y : pos_y + height, pos_x + width - line_thickness: pos_x + width, 2] = 255
+
+
+    return box
+
+
 def get_mask_chart(input: np.ndarray = None, MASK_SHOW_OPT: bool = False) -> np.ndarray:
     assert len(input.shape) == 3
     assert input.__class__.__name__ == "ndarray"
@@ -13,12 +38,14 @@ def get_mask_chart(input: np.ndarray = None, MASK_SHOW_OPT: bool = False) -> np.
     x_default = -10
     y_default = 3
 
-    mask_chart = np.zeros((input.shape[0], input.shape[1]), dtype = np.uint8)
+    mask_chart = np.zeros((input.shape[0], input.shape[1]), dtype=np.uint8)
     xpoint = int(np.round(xspace * 7 / 2) + x_default)
     ypoint = int(np.round(yspace / 2) + y_default)
 
     for k in range(6):
-        mask_chart[xpoint - r : xpoint + r, ypoint + yspace * k - r : ypoint + yspace * k + r] = 1
+        mask_chart[
+            xpoint - r : xpoint + r, ypoint + yspace * k - r : ypoint + yspace * k + r
+        ] = 1
 
     if MASK_SHOW_OPT:
         fig = plt.figure()
@@ -38,7 +65,7 @@ def get_illuminant(input: np.ndarray = None, mask: np.ndarray = None) -> np.ndar
     assert input.__class__.__name__ == "ndarray"
     assert mask.__class__.__name__ == "ndarray"
 
-    if input.shape[0 : 2] != mask.shape:
+    if input.shape[0:2] != mask.shape:
         raise ValueError("input and mask must be same size")
 
     patch_r, patch_g, patch_b = input[:, :, 0], input[:, :, 1], input[:, :, 2]
@@ -186,3 +213,10 @@ if __name__ == "__main__":
     b = get_mask_chart(a, True)
     c = get_illuminant(a, b)
     d = angular_error(np.array([0.5, 0.5, 0.5]), c)
+
+    e = get_roi_box(input_size=(1080, 1918),
+                    pos=(225, 255),
+                    size=(200, 160))
+
+    plt.imshow(e)
+    plt.show()
