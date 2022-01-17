@@ -1,4 +1,64 @@
 import numpy as np
+from matplotlib import pyplot as plt
+
+
+def get_mask_chart(input: np.ndarray = None, MASK_SHOW_OPT: bool = False) -> np.ndarray:
+    assert len(input.shape) == 3
+    assert input.__class__.__name__ == "ndarray"
+
+    xspace = int(np.round(input.shape[0] / 4))
+    yspace = int(np.round(input.shape[1] / 6))
+
+    r = 7
+    x_default = -10
+    y_default = 3
+
+    mask_chart = np.zeros((input.shape[0], input.shape[1]), dtype = np.uint8)
+    xpoint = int(np.round(xspace * 7 / 2) + x_default)
+    ypoint = int(np.round(yspace / 2) + y_default)
+
+    for k in range(6):
+        mask_chart[xpoint - r : xpoint + r, ypoint + yspace * k - r : ypoint + yspace * k + r] = 1
+
+    if MASK_SHOW_OPT:
+        fig = plt.figure()
+        plt.subplot(121)
+        plt.imshow(input)
+
+        plt.subplot(122)
+        plt.imshow(mask_chart, cmap="gray")
+
+        plt.tight_layout
+        plt.show()
+
+    return mask_chart
+
+
+def get_illuminant(input: np.ndarray = None, mask: np.ndarray = None) -> np.ndarray:
+    assert input.__class__.__name__ == "ndarray"
+    assert mask.__class__.__name__ == "ndarray"
+
+    if input.shape[0 : 2] != mask.shape:
+        raise ValueError("input and mask must be same size")
+
+    patch_r, patch_g, patch_b = input[:, :, 0], input[:, :, 1], input[:, :, 2]
+    patch_r, patch_g, patch_b = patch_r[mask], patch_g[mask], patch_b[mask]
+
+    illuminant = [patch_r.mean(), patch_g.mean(), patch_b.mean()]
+    magitude = np.linalg.norm(illuminant)
+
+    return illuminant / magitude
+
+
+def angular_error(l1: np.ndarray = None, l2: np.ndarray = None):
+    assert l1.shape == l2.shape
+
+    l1 = l1 / np.sqrt((l1 ** 2).sum())
+    l2 = l2 / np.sqrt((l2 ** 2).sum())
+
+    angle = np.arccos((l1 * l2).sum())
+
+    return np.degrees(angle)
 
 
 def salt_and_pepper(img, p):
@@ -119,3 +179,10 @@ def white_balance(input_image=None, N=4):
     output_image = np.uint8(output_image)
 
     return output_image
+
+
+if __name__ == "__main__":
+    a = np.random.randint(low=0, high=255, size=(199, 299, 3), dtype=np.uint8)
+    b = get_mask_chart(a, True)
+    c = get_illuminant(a, b)
+    d = angular_error(np.array([0.5, 0.5, 0.5]), c)
