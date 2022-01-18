@@ -23,10 +23,10 @@ if __name__ == "__main__":
     if ret:
         cv2.imshow("frame", frame)
 
-    cv2.createTrackbar("ROI X Position", "frame", 0, 1918, nothing)
-    cv2.createTrackbar("ROI Y Position", "frame", 0, 1080, nothing)
-    cv2.createTrackbar("ROI Width", "frame", 0, 1918, nothing)
-    cv2.createTrackbar("ROI Height", "frame", 0, 1080, nothing)
+    cv2.createTrackbar("ROI X Position", "frame", 0, 1918 // 2, nothing)
+    cv2.createTrackbar("ROI Y Position", "frame", 0, 1080 // 2, nothing)
+    cv2.createTrackbar("ROI Width", "frame", 0, 1918 // 4, nothing)
+    cv2.createTrackbar("ROI Height", "frame", 0, 1080 // 4, nothing)
 
     while True:
         start_time = time.time()
@@ -46,9 +46,8 @@ if __name__ == "__main__":
                 pos=pos,
                 size=size,
             )
-            box_mask = box == 0
             frame_ori = np.copy(frame)
-            frame[box_mask] = 0
+            frame[box == 0] = 0
             roi = (pos[1], pos[0], pos[1] + size[1], pos[0] + size[0])
 
             if roi[0] and roi[1] and roi[2] and roi[3]:

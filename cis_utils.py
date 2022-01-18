@@ -12,7 +12,7 @@ def get_roi_box(
     size: tuple[int, int] = None,
 ) -> np.ndarray:
 
-    assert type(input_size) is tuple and type(pos) is tuple and type(size) is tuple
+    # assert type(input_size) is tuple and type(pos) is tuple and type(size) is tuple
 
     pos_y, pos_x = pos[0], pos[1]
     height, width = size[0], size[1]
@@ -47,8 +47,8 @@ def get_roi_box(
 
 
 def get_mask_chart(input: np.ndarray = None, MASK_SHOW_OPT: bool = False) -> np.ndarray:
-    assert len(input.shape) == 3
-    assert input.__class__.__name__ == "ndarray"
+    # assert len(input.shape) == 3
+    # assert input.__class__.__name__ == "ndarray"
 
     xspace = int(np.round(input.shape[0] / 4))
     yspace = int(np.round(input.shape[1] / 6))
@@ -81,8 +81,8 @@ def get_mask_chart(input: np.ndarray = None, MASK_SHOW_OPT: bool = False) -> np.
 
 
 def get_illuminant(input: np.ndarray = None, mask: np.ndarray = None) -> np.ndarray:
-    assert input.__class__.__name__ == "ndarray"
-    assert mask.__class__.__name__ == "ndarray"
+    # assert input.__class__.__name__ == "ndarray"
+    # assert mask.__class__.__name__ == "ndarray"
 
     if input.shape[0:2] != mask.shape:
         raise ValueError("input and mask must be same size")
@@ -98,7 +98,7 @@ def get_illuminant(input: np.ndarray = None, mask: np.ndarray = None) -> np.ndar
 
 def angular_error(l1: np.ndarray = None, l2: np.ndarray = None):
     ## TODO : find exception case and make exception part...
-    assert l1.shape == l2.shape
+    # assert l1.shape == l2.shape
 
     l1 = l1 / np.sqrt((l1 ** 2).sum())
     l2 = l2 / np.sqrt((l2 ** 2).sum())
