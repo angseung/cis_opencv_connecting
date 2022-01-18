@@ -12,6 +12,8 @@ def get_roi_box(
     size: tuple[int, int] = None,
 ) -> np.ndarray:
 
+    assert type(input_size) is tuple and type(pos) is tuple and type(size) is tuple
+
     pos_y, pos_x = pos[0], pos[1]
     height, width = size[0], size[1]
     line_thickness = 5
@@ -20,12 +22,26 @@ def get_roi_box(
     box = np.zeros((*input_size, 3), dtype=np.uint8)
     box[:, :, :] = 255
 
-    box[pos_y - line_thickness : pos_y, pos_x - line_thickness : pos_x + width + line_thickness, :] = 0
-    box[pos_y - line_thickness : pos_y + height + line_thickness, pos_x - line_thickness : pos_x, :] = 0
     box[
-        pos_y + height : pos_y + height + line_thickness, pos_x - line_thickness : pos_x + width + line_thickness, :
+        pos_y - line_thickness : pos_y,
+        pos_x - line_thickness : pos_x + width + line_thickness,
+        :,
     ] = 0
-    box[pos_y - line_thickness : pos_y + height + line_thickness, pos_x + width : pos_x + width + line_thickness, :] = 0
+    box[
+        pos_y - line_thickness : pos_y + height + line_thickness,
+        pos_x - line_thickness : pos_x,
+        :,
+    ] = 0
+    box[
+        pos_y + height : pos_y + height + line_thickness,
+        pos_x - line_thickness : pos_x + width + line_thickness,
+        :,
+    ] = 0
+    box[
+        pos_y - line_thickness : pos_y + height + line_thickness,
+        pos_x + width : pos_x + width + line_thickness,
+        :,
+    ] = 0
 
     return box
 
