@@ -19,13 +19,6 @@ def get_roi_box(
     # BGR channel image...
     box = np.zeros((*input_size, 3), dtype=np.uint8)
     box[:, :, :] = 255
-    # box[pos_y : pos_y + line_thickness, pos_x : pos_x + width, :] = 0
-    # box[pos_y : pos_y + height, pos_x : pos_x + line_thickness, :] = 0
-    # box[
-    #     pos_y + height - line_thickness : pos_y + height, pos_x : pos_x + width, :
-    # ] = 0
-    # box[pos_y : pos_y + height, pos_x + width - line_thickness : pos_x + width, :] = 0
-
 
     box[pos_y - line_thickness : pos_y, pos_x - line_thickness : pos_x + width + line_thickness, :] = 0
     box[pos_y - line_thickness : pos_y + height + line_thickness, pos_x - line_thickness : pos_x, :] = 0

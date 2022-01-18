@@ -6,6 +6,7 @@ from cis_utils import *
 
 
 if __name__ == "__main__":
+    ROI_SET = False
     cap = cv2.VideoCapture(0)
     print(cv2.getBuildInformation())
 
@@ -46,27 +47,28 @@ if __name__ == "__main__":
             proceedtime = datetime.datetime.now() - starttime
 
             if roi[0] and roi[1] and roi[2] and roi[3]:
-                if cv2.waitKey(1) & 0xFF == ord("q"):
+                # when ROI is set
+                if cv2.waitKey(1) & 0xFF in [ord("D"), ord("d")]:
+                    ROI_SET = True
                     input = np.rot90(frame_ori[roi[1] : roi[3], roi[0] : roi[2], :])
-                    print(roi)
-                    fig = plt.figure()
-                    plt.imshow(input)
-                    plt.grid(True)
-                    plt.show()
+                    mask = get_mask_chart(input, True)
 
-                # ground_truth = np.array([0.5, 0.5, 0.5])
-                # ground_truth = ground_truth / np.linalg.norm(ground_truth)
-                # mask = get_mask_chart(input, False)
-                # ill_vec = get_illuminant(input, mask)
-                # ill_vec = ill_vec / np.linalg.norm(ill_vec)
-                # psnr = cv2.PSNR(input, input, R=255)
-                #
-                # d = angular_error(ground_truth, ill_vec)
-                # print("angular : %.f" % d)
+            if cv2.waitKey(1) & 0xFF in [ord("N"), ord("n")]:
+                ground_truth = np.array([0.5, 0.5, 0.5])
+                ground_truth = ground_truth / np.linalg.norm(ground_truth)
+                mask = get_mask_chart(input, False)
+                ill_vec = get_illuminant(input, mask)
+                ill_vec = ill_vec / np.linalg.norm(ill_vec)
 
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                pass
-                # break
+                noised = frame_ori[roi[1] + 540 : roi[3] + 540 , roi[0] + 959 : roi[2] + 959, :]
+                denoised = frame_ori[roi[1] : roi[3], roi[0] + 959 : roi[2] + 959, :]
+                psnr = cv2.PSNR(noised, denoised, R=255)
+
+                d = angular_error(ground_truth, ill_vec)
+                print("angular : %.f" % d)
+
+            if cv2.waitKey(1) & 0xFF in [ord("Q"), ord("q")]:
+                break
 
     cap.release()
     cv2.destroyAllWindows()
