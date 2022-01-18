@@ -1,7 +1,14 @@
 import time
+import numpy as np
 import cv2
 from matplotlib import pyplot as plt
-from cis_utils import *
+from cis_utils import (
+    nothing,
+    get_roi_box,
+    get_illuminant,
+    get_mask_chart,
+    angular_error,
+)
 
 
 if __name__ == "__main__":
@@ -20,7 +27,6 @@ if __name__ == "__main__":
     cv2.createTrackbar("ROI Y Position", "frame", 0, 1080, nothing)
     cv2.createTrackbar("ROI Width", "frame", 0, 1918, nothing)
     cv2.createTrackbar("ROI Height", "frame", 0, 1080, nothing)
-    # cv2.createButton("ROI Set Done", nothing, None, cv2.QT_PUSH_BUTTON, 1)
 
     while True:
         start_time = time.time()
@@ -66,10 +72,10 @@ if __name__ == "__main__":
                     mask = get_mask_chart(input, False)
                     ill_vec = get_illuminant(input, mask)
                     ill_vec = ill_vec / np.linalg.norm(ill_vec)
-                    d = angular_error(ground_truth, ill_vec)
+                    angle = angular_error(ground_truth, ill_vec)
                     performance = (
                         "RSEPD PSNR : %.2f(dB), AWB Angular Error : %.2f(degree)"
-                        % (psnr, d)
+                        % (psnr, angle)
                     )
                     cv2.putText(
                         frame,

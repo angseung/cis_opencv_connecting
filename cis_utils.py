@@ -97,6 +97,7 @@ def get_illuminant(input: np.ndarray = None, mask: np.ndarray = None) -> np.ndar
 
 
 def angular_error(l1: np.ndarray = None, l2: np.ndarray = None):
+    ## TODO : find exception case and make exception part...
     assert l1.shape == l2.shape
 
     l1 = l1 / np.sqrt((l1 ** 2).sum())
