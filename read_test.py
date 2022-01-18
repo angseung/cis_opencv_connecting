@@ -11,6 +11,7 @@ if __name__ == "__main__":
     font = cv2.FONT_HERSHEY_PLAIN
 
     ret, frame = cap.read()
+    cv2.namedWindow("frame")
 
     if ret:
         cv2.imshow("frame", frame)
@@ -19,6 +20,7 @@ if __name__ == "__main__":
     cv2.createTrackbar("ROI Y Position", "frame", 0, 1080, nothing)
     cv2.createTrackbar("ROI Width", "frame", 0, 1918, nothing)
     cv2.createTrackbar("ROI Height", "frame", 0, 1080, nothing)
+    # cv2.createButton("ROI Set Done", nothing, None, cv2.QT_PUSH_BUTTON, 1)
 
     while True:
         start_time = time.time()
@@ -47,30 +49,51 @@ if __name__ == "__main__":
                 # when ROI is set
                 if cv2.waitKey(1) & 0xFF in [ord("D"), ord("d")]:
                     ROI_SET = True
+
+                if ROI_SET:
                     input = np.rot90(frame_ori[roi[1] : roi[3], roi[0] : roi[2], :])
-                    mask = get_mask_chart(input, True)
+                    noised = frame_ori[
+                        roi[1] + 540 : roi[3] + 540, roi[0] + 959 : roi[2] + 959, :
+                    ]
+                    denoised = frame_ori[
+                        roi[1] : roi[3], roi[0] + 959 : roi[2] + 959, :
+                    ]
+                    psnr = cv2.PSNR(noised, denoised, R=255)
 
-            if cv2.waitKey(1) & 0xFF in [ord("N"), ord("n")]:
-                ## RSEPD psnr performance
-                noised = frame_ori[
-                    roi[1] + 540 : roi[3] + 540, roi[0] + 959 : roi[2] + 959, :
-                ]
-                denoised = frame_ori[roi[1] : roi[3], roi[0] + 959 : roi[2] + 959, :]
-                psnr = cv2.PSNR(noised, denoised, R=255)
-
-                # AWB angular error performance
-                ground_truth = np.array([0.5, 0.5, 0.5])
-                ground_truth = ground_truth / np.linalg.norm(ground_truth)
-                mask = get_mask_chart(input, False)
-                ill_vec = get_illuminant(input, mask)
-                ill_vec = ill_vec / np.linalg.norm(ill_vec)
-                d = angular_error(ground_truth, ill_vec)
-
-                print("psnr : %f, angular : %f" % (psnr, d))
+                    # AWB angular error performance
+                    ground_truth = np.array([0.5, 0.5, 0.5])
+                    ground_truth = ground_truth / np.linalg.norm(ground_truth)
+                    mask = get_mask_chart(input, False)
+                    ill_vec = get_illuminant(input, mask)
+                    ill_vec = ill_vec / np.linalg.norm(ill_vec)
+                    d = angular_error(ground_truth, ill_vec)
+                    performance = (
+                        "RSEPD PSNR : %.2f(dB), AWB Angular Error : %.2f(degree)"
+                        % (psnr, d)
+                    )
+                    cv2.putText(
+                        frame,
+                        performance,
+                        (20, 60),
+                        color=(0, 0, 0),
+                        fontFace=font,
+                        fontScale=1.5,
+                        thickness=1,
+                    )
 
             end_time = time.time()
-            fpstxt = "Estimated frames per second : %.2f" % (1 / (end_time - start_time))
-            cv2.putText(frame, fpstxt, (20, 20), color=(0, 0, 0), fontFace=font, fontScale=1.5, thickness=1)
+            fpstxt = "Estimated frames per second : %.2f" % (
+                1 / (end_time - start_time)
+            )
+            cv2.putText(
+                frame,
+                fpstxt,
+                (20, 20),
+                color=(0, 0, 0),
+                fontFace=font,
+                fontScale=1.5,
+                thickness=1,
+            )
             cv2.imshow("frame", frame)
 
             if cv2.waitKey(1) & 0xFF in [ord("Q"), ord("q")]:
