@@ -88,7 +88,7 @@ def get_illuminant(input: np.ndarray = None, mask: np.ndarray = None) -> np.ndar
         raise ValueError("input and mask must be same size")
 
     patch_r, patch_g, patch_b = input[:, :, 0], input[:, :, 1], input[:, :, 2]
-    patch_r, patch_g, patch_b = patch_r[mask], patch_g[mask], patch_b[mask]
+    patch_r, patch_g, patch_b = patch_r[mask == 1], patch_g[mask == 1], patch_b[mask == 1]
 
     illuminant = [patch_r.mean(), patch_g.mean(), patch_b.mean()]
     magitude = np.linalg.norm(illuminant)
@@ -98,6 +98,7 @@ def get_illuminant(input: np.ndarray = None, mask: np.ndarray = None) -> np.ndar
 
 def angular_error(l1: np.ndarray = None, l2: np.ndarray = None):
     ## TODO : find exception case and make exception part...
+    ## MATLAB Validated
     # assert l1.shape == l2.shape
 
     l1 = l1 / np.sqrt((l1 ** 2).sum())
@@ -226,15 +227,3 @@ def white_balance(input_image=None, N=4):
     output_image = np.uint8(output_image)
 
     return output_image
-
-
-if __name__ == "__main__":
-    a = np.random.randint(low=0, high=255, size=(199, 299, 3), dtype=np.uint8)
-    b = get_mask_chart(a, True)
-    c = get_illuminant(a, b)
-    d = angular_error(np.array([0.5, 0.5, 0.5]), c)
-
-    e = get_roi_box(input_size=(1080, 1918), pos=(225, 255), size=(200, 160))
-
-    plt.imshow(e)
-    plt.show()
