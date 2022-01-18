@@ -12,17 +12,27 @@ def get_roi_box(
     size: tuple[int, int] = None,
 ) -> np.ndarray:
 
-    pos_x, pos_y = pos[0], pos[1]
-    width, height = size[0], size[1]
-    line_thickness = 10
+    pos_y, pos_x = pos[0], pos[1]
+    height, width = size[0], size[1]
+    line_thickness = 5
 
     # BGR channel image...
     box = np.zeros((*input_size, 3), dtype=np.uint8)
-    box[pos_y : pos_y + line_thickness, pos_x : pos_x + width, 2] = 255
-    box[pos_y : pos_y + height, pos_x : pos_x + line_thickness, 2] = 255
-    box[pos_y + height - line_thickness: pos_y + height, pos_x : pos_x + width, 2] = 255
-    box[pos_y : pos_y + height, pos_x + width - line_thickness: pos_x + width, 2] = 255
+    box[:, :, :] = 255
+    # box[pos_y : pos_y + line_thickness, pos_x : pos_x + width, :] = 0
+    # box[pos_y : pos_y + height, pos_x : pos_x + line_thickness, :] = 0
+    # box[
+    #     pos_y + height - line_thickness : pos_y + height, pos_x : pos_x + width, :
+    # ] = 0
+    # box[pos_y : pos_y + height, pos_x + width - line_thickness : pos_x + width, :] = 0
 
+
+    box[pos_y - line_thickness : pos_y, pos_x - line_thickness : pos_x + width + line_thickness, :] = 0
+    box[pos_y - line_thickness : pos_y + height + line_thickness, pos_x - line_thickness : pos_x, :] = 0
+    box[
+        pos_y + height : pos_y + height + line_thickness, pos_x - line_thickness : pos_x + width + line_thickness, :
+    ] = 0
+    box[pos_y - line_thickness : pos_y + height + line_thickness, pos_x + width : pos_x + width + line_thickness, :] = 0
 
     return box
 
@@ -214,9 +224,7 @@ if __name__ == "__main__":
     c = get_illuminant(a, b)
     d = angular_error(np.array([0.5, 0.5, 0.5]), c)
 
-    e = get_roi_box(input_size=(1080, 1918),
-                    pos=(225, 255),
-                    size=(200, 160))
+    e = get_roi_box(input_size=(1080, 1918), pos=(225, 255), size=(200, 160))
 
     plt.imshow(e)
     plt.show()
