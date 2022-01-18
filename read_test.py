@@ -57,13 +57,14 @@ if __name__ == "__main__":
 
                 if ROI_SET:
                     input = np.rot90(frame_ori[roi[1] : roi[3], roi[0] : roi[2], :])
-                    noised = frame_ori[
-                        roi[1] + 540 : roi[3] + 540, roi[0] + 959 : roi[2] + 959, :
-                    ]
+                    # TODO : Validate with revised logic...
                     denoised = frame_ori[
                         roi[1] : roi[3], roi[0] + 959 : roi[2] + 959, :
                     ]
-                    psnr = cv2.PSNR(noised, denoised, R=255)
+                    origin = frame_ori[
+                        roi[1] + 540 : roi[3] + 540, roi[0] : roi[2], :
+                    ]
+                    psnr = cv2.PSNR(origin, denoised, R=255)
 
                     # AWB angular error performance
                     ground_truth = np.array([0.5, 0.5, 0.5])
