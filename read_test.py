@@ -81,7 +81,7 @@ if __name__ == "__main__":
                         color=(0, 0, 0),
                         fontFace=font,
                         fontScale=1.5,
-                        thickness=1,
+                        thickness=2,
                     )
 
             end_time = time.time()
@@ -95,7 +95,7 @@ if __name__ == "__main__":
                 color=(0, 0, 0),
                 fontFace=font,
                 fontScale=1.5,
-                thickness=1,
+                thickness=2,
             )
             cv2.imshow("frame", frame)
 
