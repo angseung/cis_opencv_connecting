@@ -98,9 +98,9 @@ def get_illuminant(input: np.ndarray = None, mask: np.ndarray = None) -> np.ndar
     )
 
     illuminant = [patch_r.mean(), patch_g.mean(), patch_b.mean()]
-    magitude = np.linalg.norm(illuminant)
+    magnitude = np.linalg.norm(illuminant)
 
-    return illuminant / magitude
+    return illuminant / magnitude
 
 
 def angular_error(l1: np.ndarray = None, l2: np.ndarray = None) -> float:
@@ -124,7 +124,6 @@ def get_psnr(
 
     mse = np.mean((origin.astype(np.float32) - input.astype(np.float32)) ** 2)
     psnr = 20 * math.log10(max_val / math.sqrt(mse))
-    psnr = cv2.PSNR(origin, input, R=max_val)
 
     return psnr
 
