@@ -1,8 +1,10 @@
+import math
+from typing import Any
 import numpy as np
 from matplotlib import pyplot as plt
 
 
-def nothing(event):
+def nothing(event: Any = None) -> None:
     pass
 
 
@@ -12,7 +14,7 @@ def get_roi_box(
     size: tuple[int, int] = None,
 ) -> np.ndarray:
 
-    # assert type(input_size) is tuple and type(pos) is tuple and type(size) is tuple
+    assert type(input_size) is tuple and type(pos) is tuple and type(size) is tuple
 
     pos_y, pos_x = pos[0], pos[1]
     height, width = size[0], size[1]
@@ -47,8 +49,8 @@ def get_roi_box(
 
 
 def get_mask_chart(input: np.ndarray = None, MASK_SHOW_OPT: bool = False) -> np.ndarray:
-    # assert len(input.shape) == 3
-    # assert input.__class__.__name__ == "ndarray"
+    assert len(input.shape) == 3
+    assert input.__class__.__name__ == "ndarray"
 
     xspace = int(np.round(input.shape[0] / 4))
     yspace = int(np.round(input.shape[1] / 6))
@@ -81,14 +83,18 @@ def get_mask_chart(input: np.ndarray = None, MASK_SHOW_OPT: bool = False) -> np.
 
 
 def get_illuminant(input: np.ndarray = None, mask: np.ndarray = None) -> np.ndarray:
-    # assert input.__class__.__name__ == "ndarray"
-    # assert mask.__class__.__name__ == "ndarray"
+    assert input.__class__.__name__ == "ndarray"
+    assert mask.__class__.__name__ == "ndarray"
 
     if input.shape[0:2] != mask.shape:
         raise ValueError("input and mask must be same size")
 
     patch_r, patch_g, patch_b = input[:, :, 0], input[:, :, 1], input[:, :, 2]
-    patch_r, patch_g, patch_b = patch_r[mask == 1], patch_g[mask == 1], patch_b[mask == 1]
+    patch_r, patch_g, patch_b = (
+        patch_r[mask == 1],
+        patch_g[mask == 1],
+        patch_b[mask == 1],
+    )
 
     illuminant = [patch_r.mean(), patch_g.mean(), patch_b.mean()]
     magitude = np.linalg.norm(illuminant)
@@ -96,10 +102,8 @@ def get_illuminant(input: np.ndarray = None, mask: np.ndarray = None) -> np.ndar
     return illuminant / magitude
 
 
-def angular_error(l1: np.ndarray = None, l2: np.ndarray = None):
-    ## TODO : find exception case and make exception part...
-    ## MATLAB Validated
-    # assert l1.shape == l2.shape
+def angular_error(l1: np.ndarray = None, l2: np.ndarray = None) -> float:
+    assert l1.shape == l2.shape
 
     l1 = l1 / np.sqrt((l1 ** 2).sum())
     l2 = l2 / np.sqrt((l2 ** 2).sum())
@@ -107,6 +111,17 @@ def angular_error(l1: np.ndarray = None, l2: np.ndarray = None):
     angle = np.arccos((l1 * l2).sum())
 
     return np.degrees(angle)
+
+
+def get_psnr(
+    origin: np.ndarray = None, input: np.ndarray = None, max_val: int = 255
+) -> float:
+    assert origin.shape == input.shape
+
+    mse = np.mean((origin - input) ** 2)
+    psnr = 20 * math.log10(max_val / math.sqrt(mse))
+
+    return psnr
 
 
 def salt_and_pepper(img, p):

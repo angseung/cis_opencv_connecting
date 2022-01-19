@@ -8,6 +8,7 @@ from cis_utils import (
     get_illuminant,
     get_mask_chart,
     angular_error,
+    get_psnr,
 )
 
 
@@ -23,8 +24,8 @@ if __name__ == "__main__":
     if ret:
         cv2.imshow("frame", frame)
 
-    cv2.createTrackbar("ROI X Position", "frame", 0, 1918 // 2, nothing)
-    cv2.createTrackbar("ROI Y Position", "frame", 0, 1080 // 2, nothing)
+    cv2.createTrackbar("ROI X", "frame", 0, 1918 // 2, nothing)
+    cv2.createTrackbar("ROI Y", "frame", 0, 1080 // 2, nothing)
     cv2.createTrackbar("ROI Width", "frame", 0, 1918 // 4, nothing)
     cv2.createTrackbar("ROI Height", "frame", 0, 1080 // 4, nothing)
 
@@ -34,8 +35,8 @@ if __name__ == "__main__":
 
         if ret:
             pos = (
-                cv2.getTrackbarPos("ROI Y Position", "frame"),
-                cv2.getTrackbarPos("ROI X Position", "frame"),
+                cv2.getTrackbarPos("ROI Y", "frame"),
+                cv2.getTrackbarPos("ROI X", "frame"),
             )
             size = (
                 cv2.getTrackbarPos("ROI Height", "frame"),
@@ -58,13 +59,9 @@ if __name__ == "__main__":
                 if ROI_SET:
                     input = np.rot90(frame_ori[roi[1] : roi[3], roi[0] : roi[2], :])
                     # TODO : Validate with revised logic...
-                    denoised = frame_ori[
-                        roi[1] : roi[3], roi[0] + 959 : roi[2] + 959, :
-                    ]
-                    origin = frame_ori[
-                        roi[1] + 540 : roi[3] + 540, roi[0] : roi[2], :
-                    ]
-                    psnr = cv2.PSNR(origin, denoised, R=255)
+                    denoised = frame_ori[0:540, 1918 // 2 : 1918, :]
+                    origin = frame_ori[540:1080, 0 : 1918 // 2, :]
+                    psnr = get_psnr(origin, denoised, max_val=255)
 
                     # AWB angular error performance
                     ground_truth = np.array([0.5, 0.5, 0.5])
