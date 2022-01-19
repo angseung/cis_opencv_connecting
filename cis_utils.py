@@ -1,5 +1,6 @@
 import math
-from typing import Any
+from typing import Any, Tuple
+import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -9,9 +10,9 @@ def nothing(event: Any = None) -> None:
 
 
 def get_roi_box(
-    input_size: tuple[int, int] = (1080, 1918),
-    pos: tuple[int, int] = None,
-    size: tuple[int, int] = None,
+    input_size: Tuple[int, int] = (1080, 1918),
+    pos: Tuple[int, int] = None,
+    size: Tuple[int, int] = None,
 ) -> np.ndarray:
 
     assert type(input_size) is tuple and type(pos) is tuple and type(size) is tuple
@@ -114,12 +115,16 @@ def angular_error(l1: np.ndarray = None, l2: np.ndarray = None) -> float:
 
 
 def get_psnr(
-    origin: np.ndarray = None, input: np.ndarray = None, max_val: int = 255
+    origin: np.ndarray = None, input: np.ndarray = None, max_val: float = 255.0
 ) -> float:
     assert origin.shape == input.shape
 
-    mse = np.mean((origin - input) ** 2)
+    origin = cv2.cvtColor(origin, cv2.COLOR_BGR2GRAY)
+    input = cv2.cvtColor(input, cv2.COLOR_BGR2GRAY)
+
+    mse = np.mean((origin.astype(np.float32) - input.astype(np.float32)) ** 2)
     psnr = 20 * math.log10(max_val / math.sqrt(mse))
+    psnr = cv2.PSNR(origin, input, R=max_val)
 
     return psnr
 
@@ -242,3 +247,14 @@ def white_balance(input_image=None, N=4):
     output_image = np.uint8(output_image)
 
     return output_image
+
+if __name__ == "__main__":
+    from scipy.io import loadmat
+
+    a = loadmat("ori.mat")["Im_original"]
+    b = loadmat("dn.mat")["Im_modified"]
+    # psnr_mat = get_psnr_custom(a, b, 255)
+    psnr = get_psnr(a, b, 255)
+    # psnr_geek = PSNR(a, b)
+    # psnr_cv2 = cv2.PSNR(a, b, 255)
+    # psnr_tf = tf.image.psnr(a[np.newaxis, :], b[np.newaxis, :], max_val=255)

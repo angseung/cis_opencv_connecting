@@ -1,7 +1,6 @@
 import time
 import numpy as np
 import cv2
-from matplotlib import pyplot as plt
 from cis_utils import (
     nothing,
     get_roi_box,
@@ -16,6 +15,8 @@ cam_num = 0
 if __name__ == "__main__":
     ROI_SET = False
     cap = cv2.VideoCapture(cam_num)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1918)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
     print(cv2.getBuildInformation())
     font = cv2.FONT_HERSHEY_PLAIN
 
@@ -27,8 +28,8 @@ if __name__ == "__main__":
 
     cv2.createTrackbar("ROI X", "frame", 0, 1918 // 2, nothing)
     cv2.createTrackbar("ROI Y", "frame", 0, 1080 // 2, nothing)
-    cv2.createTrackbar("ROI Width", "frame", 0, 1918 // 4, nothing)
-    cv2.createTrackbar("ROI Height", "frame", 0, 1080 // 4, nothing)
+    cv2.createTrackbar("ROI Width", "frame", 0, 1918 // 2, nothing)
+    cv2.createTrackbar("ROI Height", "frame", 0, 1080 // 2, nothing)
 
     while True:
         start_time = time.time()
@@ -59,10 +60,9 @@ if __name__ == "__main__":
 
                 if ROI_SET:
                     input = np.rot90(frame_ori[roi[1] : roi[3], roi[0] : roi[2], :])
-                    # TODO : Validate with revised logic...
-                    denoised = frame_ori[0:540, 1918 // 2 : 1918, :]
-                    origin = frame_ori[540:1080, 0 : 1918 // 2, :]
-                    psnr = get_psnr(origin, denoised, max_val=255)
+                    denoised = frame_ori[1:540, 1918 // 2 + 1 : 1918, :]
+                    origin = frame_ori[540:1080 - 1, 0 : 1918 // 2 - 1, :]
+                    psnr = get_psnr(origin, denoised, max_val=255.0)
 
                     # AWB angular error performance
                     ground_truth = np.array([0.5, 0.5, 0.5])
