@@ -11,10 +11,11 @@ from cis_utils import (
     get_psnr,
 )
 
+cam_num = 0
 
 if __name__ == "__main__":
     ROI_SET = False
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(cam_num)
     print(cv2.getBuildInformation())
     font = cv2.FONT_HERSHEY_PLAIN
 
