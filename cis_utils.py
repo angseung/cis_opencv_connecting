@@ -247,6 +247,7 @@ def white_balance(input_image=None, N=4):
 
     return output_image
 
+
 if __name__ == "__main__":
     from scipy.io import loadmat
 

@@ -22,14 +22,24 @@ if __name__ == "__main__":
 
     ret, frame = cap.read()
     cv2.namedWindow("frame")
+    cv2.namedWindow("control")
+    cv2.resizeWindow(winname='frame', width=960, height=600)
+    cv2.resizeWindow(winname='control', width=960, height=180)
 
     if ret:
         cv2.imshow("frame", frame)
 
-    cv2.createTrackbar("ROI X", "frame", 0, 1918 // 2, nothing)
-    cv2.createTrackbar("ROI Y", "frame", 0, 1080 // 2, nothing)
-    cv2.createTrackbar("ROI Width", "frame", 0, 1918 // 2, nothing)
-    cv2.createTrackbar("ROI Height", "frame", 0, 1080 // 2, nothing)
+    cv2.createTrackbar("ROI X", "control", 0, 1918 // 2, nothing)
+    # cv2.setTrackbarPos("ROI X", "frame", 0)
+
+    cv2.createTrackbar("ROI Y", "control", 0, 1080 // 2, nothing)
+    # cv2.setTrackbarPos("ROI Y", "frame", 1)
+
+    cv2.createTrackbar("ROI Width", "control", 0, 1918 // 2, nothing)
+    # cv2.setTrackbarPos("ROI Width", "frame", 2)
+
+    cv2.createTrackbar("ROI Height", "control", 0, 1080 // 2, nothing)
+    # cv2.setTrackbarPos("ROI Height", "frame", 3)
 
     while True:
         start_time = time.time()
@@ -37,12 +47,12 @@ if __name__ == "__main__":
 
         if ret:
             pos = (
-                cv2.getTrackbarPos("ROI Y", "frame"),
-                cv2.getTrackbarPos("ROI X", "frame"),
+                cv2.getTrackbarPos("ROI Y", "control"),
+                cv2.getTrackbarPos("ROI X", "control"),
             )
             size = (
-                cv2.getTrackbarPos("ROI Height", "frame"),
-                cv2.getTrackbarPos("ROI Width", "frame"),
+                cv2.getTrackbarPos("ROI Height", "control"),
+                cv2.getTrackbarPos("ROI Width", "control"),
             )
             box = get_roi_box(
                 input_size=(frame.shape[0], frame.shape[1]),
@@ -61,7 +71,7 @@ if __name__ == "__main__":
                 if ROI_SET:
                     input = np.rot90(frame_ori[roi[1] : roi[3], roi[0] : roi[2], :])
                     denoised = frame_ori[1:540, 1918 // 2 + 1 : 1918, :]
-                    origin = frame_ori[540:1080 - 1, 0 : 1918 // 2 - 1, :]
+                    origin = frame_ori[540 : 1080 - 1, 0 : 1918 // 2 - 1, :]
                     psnr = get_psnr(origin, denoised, max_val=255.0)
 
                     # AWB angular error performance
@@ -98,6 +108,7 @@ if __name__ == "__main__":
                 fontScale=1.5,
                 thickness=2,
             )
+            frame = cv2.resize(frame, dsize=(960, 480))
             cv2.imshow("frame", frame)
 
             if cv2.waitKey(1) & 0xFF in [ord("Q"), ord("q")]:
