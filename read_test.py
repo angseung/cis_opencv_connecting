@@ -10,7 +10,7 @@ from cis_utils import (
     get_psnr,
 )
 
-cam_num = 0
+cam_num = 1
 
 if __name__ == "__main__":
     ROI_SET = False
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     ret, frame = cap.read()
     cv2.namedWindow("frame")
     cv2.namedWindow("control")
-    cv2.resizeWindow(winname='frame', width=960, height=600)
+    cv2.resizeWindow(winname='frame', width=1280, height=720)
     cv2.resizeWindow(winname='control', width=960, height=180)
 
     if ret:
@@ -108,7 +108,7 @@ if __name__ == "__main__":
                 fontScale=1.5,
                 thickness=2,
             )
-            frame = cv2.resize(frame, dsize=(960, 480))
+            frame = cv2.resize(frame, dsize=(1280, 720))
             cv2.imshow("frame", frame)
 
             if cv2.waitKey(1) & 0xFF in [ord("Q"), ord("q")]:
