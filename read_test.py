@@ -9,7 +9,12 @@ from cis_utils import (
     angular_error,
     get_psnr,
 )
+"""
+cam_num == 0 if there is no built-in webcam
+else cam_num == 1
+"""
 
+# cam_num = 0
 cam_num = 1
 
 if __name__ == "__main__":
@@ -30,16 +35,12 @@ if __name__ == "__main__":
         cv2.imshow("frame", frame)
 
     cv2.createTrackbar("ROI X", "control", 0, 1918 // 2, nothing)
-    # cv2.setTrackbarPos("ROI X", "frame", 0)
 
     cv2.createTrackbar("ROI Y", "control", 0, 1080 // 2, nothing)
-    # cv2.setTrackbarPos("ROI Y", "frame", 1)
 
     cv2.createTrackbar("ROI Width", "control", 0, 1918 // 2, nothing)
-    # cv2.setTrackbarPos("ROI Width", "frame", 2)
 
     cv2.createTrackbar("ROI Height", "control", 0, 1080 // 2, nothing)
-    # cv2.setTrackbarPos("ROI Height", "frame", 3)
 
     while True:
         start_time = time.time()
